@@ -17,24 +17,24 @@ chartoHex char = elemIndex char "0123456789abcdf"
 chartoBin char = elemIndex char "01"
 chartoDec char = elemIndex char "0123456789"
 
-numStrToNum charToNum power string limit  
+numStrToNum charToNum power limit string  
   | (num <= limit) = num
   | otherwise = throw ("number size error " ++ num)
   where
     num = sum (map (\x -> (chartoNum fst) * (power ^ snd)) (zip (reverse string) [0..]))
 
-decStrToNum string limit =
-  numStrToNum chartoDec 10 string limit 
+decStrToNum limit string =
+  numStrToNum chartoDec 10 limit string 
   
-binStrToNum string limit =
-  numStrToNum chartoBin 2 string limit
+binStrToNum limit string =
+  numStrToNum chartoBin 2 limit string
 
-hexStrToNum string limit =
-  numStrToNum chartoHex 16 string limit
+hexStrToNum limit string =
+  numStrToNum chartoHex 16 limit string
 
 addrResolv :: String -> Int
 addrResolv addrStr
-  | ((length addrStr) < 4) && (addrStr!!0 == '$') = decStrToNum (tail addrStr) 0b1111
+  | ((length addrStr) < 4) && (addrStr!!0 == '$') = decStrToNum 0b1111 (tail addrStr)
   | otherwise = throw ("address format error " : addrStr)
 
 addressCommandfill params =
@@ -50,8 +50,8 @@ subI params = addressCommandfill params + 0b0101
 multI params = addressCommandfill params + 0b0110
 divI params = addressCommandfill params + 0b0111
 rootI params = addressCommandfill params + 0b1000
-shiftLI params = addressCommandfill (init params) + shiftL 4 (decStrToNum (last params) 0b1111) + 0b1001
-shiftRI params = addressCommandfill (init params) + shiftL 4 (decStrToNum (last params) 0b1111) + 0b1010
+shiftLI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1001
+shiftRI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1010
 setI params = 0b1011 
 loadI params = addressCommandfill (init params) + shiftL 4 0b0000 + 0b1100
 storeI params = addressCommandfill (init params) + shiftL 4 0b1111 + 0b1100
@@ -59,12 +59,14 @@ getProcI params = shiftL 8 (addrResolv params!!1) + shiftL 4 0b0011 + 0b1100
 compI instruction = addressCommandfill params  + 0b1101
 syO instruction = 0b1110
 syI instruction = 0b1111
-hexData instruction = map (\x -> hexStrToNum x 0xff) params
-binData instruction = map (\x -> binStrToNum x 0xff) params 
+
+
+hexData instruction = map (hexStrToNum 0xff) params
+binData instruction = map (binStrToNum 0xff) params 
 decData instruction =
   map (\x -> if (length x) < 5 
   then (binStrToNum x 0xff)
-  else let p = (binStrToNum x 0xffff) in [(shiftR 8 p), ((.&.) 0xf p)]
+  else let p = (binStrToNum 0xffff x) in [(shiftR 8 p), ((.&.) 0xf p)]
   ) params 
 
 charData instruction = map letters params 
