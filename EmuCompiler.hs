@@ -2,17 +2,6 @@ import System.IO
 import System.Environment
 import Data.List
 
-inputFile :: FilePath -> IO [[String]]
-inputFile sourcefilename = do
-  sfHandle <- openFile sourcefilename ReadMode
-  putStrLn "Hello, World!"
-  sfContents <- hGetContents sfHandle
-  let sfLines = filter (lines sfContents)
-  let sfInstructions = map words sfLines 
-  print sfInstructions 
-  -- hClose sfHandle
-  return sfInstructions
-
 chartoHex char = elemIndex char "0123456789abcdf" 
 chartoBin char = elemIndex char "01"
 chartoDec char = elemIndex char "0123456789"
@@ -64,7 +53,7 @@ compI instruction = addressCommandfill params  + 0b1101
 syO subOpcode instruction = shiftL 4 subOpcode + 0b1110
 syI subOpcode instruction = shiftL 4 subOpcode + 0b1111
 
-
+-- don't forget to fix the data here there are unclear type returns
 hexData instruction = map (hexStrToNum 0xff) params
 binData instruction = map (binStrToNum 0xff) params 
 decData instruction =
@@ -100,6 +89,18 @@ oprandInterpret operator =
   "d0" -> decData
   "c0" -> charData
   otherwise -> throw ("badInstruction " ++ operator)
+
+
+inputFile :: FilePath -> IO [[String]]
+inputFile sourcefilename = do
+  sfHandle <- openFile sourcefilename ReadMode
+  putStrLn "Hello, World!"
+  sfContents <- hGetContents sfHandle
+  let sfLines = filter (\x -> x!!0 != '/' && x!!1 != '/' && length x != 0) (lines sfContents)
+  let sfInstructions = map words sfLines 
+  print sfInstructions 
+  -- hClose sfHandle
+  return sfInstructions
 
 outputFile :: FilePath [[Char]] -> IO
 outputFile outputfilename binaryinstructs = do
