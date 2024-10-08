@@ -23,14 +23,11 @@ numStrToNum charToNum power limit string
   where
     num = sum (map (\x -> (chartoNum fst) * (power ^ snd)) (zip (reverse string) [0..]))
 
-decStrToNum limit string =
-  numStrToNum chartoDec 10 limit string 
-  
-binStrToNum limit string =
-  numStrToNum chartoBin 2 limit string
+decStrToNum limit string = numStrToNum chartoDec 10 limit string 
 
-hexStrToNum limit string =
-  numStrToNum chartoHex 16 limit string
+binStrToNum limit string = numStrToNum chartoBin 2 limit string
+
+hexStrToNum limit string = numStrToNum chartoHex 16 limit string
 
 addrResolv :: String -> Int
 addrResolv addrStr
@@ -65,14 +62,14 @@ binData instruction = map (binStrToNum 0xff) params
 decData instruction =
   map (\x -> if (length x) < 5 
   then (binStrToNum 0xff x)
-  else let p = (binStrToNum 0xffff x) in [(shiftR 8 p), ((.&.) 0xf p)]
-  ) params 
+  else let p = (binStrToNum 0xffff x) in [(shiftR 8 p), ((.&.) 0xff p)]
+  ) params
 
-charData instruction = map letters params 
+charData instruction = map letters params
 
 oprandInterpret :: String -> [String] -> Int
 oprandInterpret operator =
-  case operator of 
+  case operator of
   "or" -> orI
   "xor" -> xorI
   "and" -> andI
