@@ -49,12 +49,20 @@ divI params = addressCommandfill params + 0b0111
 rootI params = addressCommandfill params + 0b1000
 shiftLI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1001
 shiftRI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1010
-setI params = 0b1011 
+setI params =
+  (shiftL 8 num) + shiftL 4 (addrResolv params!!1) + 0b1011 
+  where 
+    num = case (params!!0)!!1 of
+      'x' -> hexStrToNum 0xff params!!0
+      'b' -> binStrToNum 0xff params!!0
+      'd' -> decStrToNum 0xff params!!0
+      otherwise -> throw "badNumber in SetI" 
+
 memI subOpcode params = addressCommandfill (init params) + shiftL 4 subOpcode + 0b1100
 getProcI params = shiftL 8 (addrResolv params!!1) + shiftL 4 0b0011 + 0b1100
 compI instruction = addressCommandfill params  + 0b1101
-syO instruction = 0b1110
-syI instruction = 0b1111
+syO subOpcode instruction = shiftL 4 subOpcode + 0b1110
+syI subOpcode instruction = shiftL 4 subOpcode + 0b1111
 
 
 hexData instruction = map (hexStrToNum 0xff) params
