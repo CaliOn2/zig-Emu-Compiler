@@ -90,10 +90,10 @@ oprandInterpret operator =
   "comp" -> compI
   "syo" -> syO
   "syi" -> syI
-  "0x" -> hexData
-  "0b" -> binData
-  "0d" -> decData
-  "0c" -> charData
+  "x0" -> hexData
+  "b0" -> binData
+  "d0" -> decData
+  "c0" -> charData
   otherwise -> throw ("badInstruction " ++ operator)
 
 outputFile :: FilePath [[Char]] -> IO
