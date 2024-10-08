@@ -65,7 +65,7 @@ hexData instruction = map (hexStrToNum 0xff) params
 binData instruction = map (binStrToNum 0xff) params 
 decData instruction =
   map (\x -> if (length x) < 5 
-  then (binStrToNum x 0xff)
+  then (binStrToNum 0xff x)
   else let p = (binStrToNum 0xffff x) in [(shiftR 8 p), ((.&.) 0xf p)]
   ) params 
 
