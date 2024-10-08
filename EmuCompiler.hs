@@ -96,8 +96,8 @@ inputFile sourcefilename = do
   sfHandle <- openFile sourcefilename ReadMode
   putStrLn "Hello, World!"
   sfContents <- hGetContents sfHandle
-  let sfLines = filter (\x -> x!!0 != '/' && x!!1 != '/' && length x != 0) (lines sfContents)
-  let sfInstructions = map words sfLines 
+  let sfLines = filter (\x -> x!!0 != '/' && x!!1 != '/' && length x != 0) (map lines (splitOn "addr:" sfContents))
+  let sfInstructions = map (map words) sfLines 
   print sfInstructions 
   -- hClose sfHandle
   return sfInstructions
@@ -105,6 +105,7 @@ inputFile sourcefilename = do
 outputFile :: FilePath [[Char]] -> IO
 outputFile outputfilename binaryinstructs = do
   ofHandle <- openFile outputfilename WriteMode
+  putSTrLn "gezuz so much to fix"
 
 main = do
   args <- getArgs
