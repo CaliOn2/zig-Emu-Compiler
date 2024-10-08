@@ -53,8 +53,7 @@ rootI params = addressCommandfill params + 0b1000
 shiftLI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1001
 shiftRI params = addressCommandfill (init params) + shiftL 4 (decStrToNum 0b1111 (last params)) + 0b1010
 setI params = 0b1011 
-loadI params = addressCommandfill (init params) + shiftL 4 0b0000 + 0b1100
-storeI params = addressCommandfill (init params) + shiftL 4 0b1111 + 0b1100
+memI subOpcode params = addressCommandfill (init params) + shiftL 4 subOpcode + 0b1100
 getProcI params = shiftL 8 (addrResolv params!!1) + shiftL 4 0b0011 + 0b1100
 compI instruction = addressCommandfill params  + 0b1101
 syO instruction = 0b1110
@@ -85,8 +84,8 @@ oprandInterpret operator =
   "shftl" -> shiftLI
   "shftr" -> shiftRI
   "set" -> setI
-  "load" -> loadI
-  "store" -> storeI
+  "load" -> memI 0b0000
+  "store" -> memI 0b1111
   "proc" -> getProcI
   "comp" -> compI
   "syo" -> syO
